@@ -19,6 +19,10 @@ class DataIngestion:
             dataset_url = self.config.source_URL
             zip_download_dir = self.config.local_data_file
             os.makedirs("artifacts/data_ingestion", exist_ok=True)
+            if os.path.exists(zip_download_dir):
+             logger.info(f"File already exists at {zip_download_dir}, skipping download.")
+             return zip_download_dir
+            
             logger.info(f"Downloading data from {dataset_url} into file {zip_download_dir}")
 
             file_id = dataset_url.split("/")[-2]
@@ -29,6 +33,8 @@ class DataIngestion:
 
         except Exception as e:
             raise e
+        
+    
         
     def extract_zip_file(self):
         """
