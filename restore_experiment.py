@@ -1,10 +1,14 @@
 import os
-os.environ['MLFLOW_TRACKING_URI'] = 'https://dagshub.com/rohit-patil-2507/Kidney-disease-classification-Deep-learning-project.mlflow'
-os.environ['MLFLOW_TRACKING_USERNAME'] = 'rohit-patil-2507'
-os.environ['MLFLOW_TRACKING_PASSWORD'] = 'eceeb5ddbc868faee671550f4c23909cdd1b7e29'
 
 import mlflow
 from mlflow.tracking import MlflowClient
+
+mlflow.set_tracking_uri(
+    os.getenv(
+        'MLFLOW_TRACKING_URI',
+        'https://dagshub.com/rohit-patil-2507/Kidney-disease-classification-Deep-learning-project.mlflow'
+    )
+)
 
 experiment_name = 'Kidney-Disease-Classification'
 

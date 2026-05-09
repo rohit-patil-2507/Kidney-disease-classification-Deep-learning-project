@@ -66,7 +66,9 @@ class ConfigurationManager:
             params_batch_size=params.BATCH_SIZE,
             params_is_augmentation=params.AUGMENTATION,
             params_image_size=params.IMAGE_SIZE,
-            params_learning_rate=params.LEARNING_RATE
+            params_learning_rate=params.LEARNING_RATE,
+            params_weights=params.WEIGHTS,
+            params_classes=params.CLASSES
         )
 
         return training_config
@@ -78,6 +80,7 @@ class ConfigurationManager:
             mlflow_uri="https://dagshub.com/rohit-patil-2507/Kidney-disease-classification-Deep-learning-project.mlflow",
             all_params=self.params,
             params_image_size=self.params.IMAGE_SIZE,
-            params_batch_size=self.params.BATCH_SIZE
+            params_batch_size=self.params.BATCH_SIZE,
+            params_learning_rate=self.params.LEARNING_RATE
         )
         return eval_config

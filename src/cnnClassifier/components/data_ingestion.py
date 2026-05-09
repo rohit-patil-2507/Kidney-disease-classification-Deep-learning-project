@@ -5,11 +5,11 @@ from cnnClassifier import logger
 from cnnClassifier.utils.common import get_size
 from cnnClassifier.entity.config_entity import DataIngestionConfig
 
-
 class DataIngestion:
     def __init__(self, config: DataIngestionConfig):
         self.config = config
 
+    
     def download_file(self)-> str:
         '''
         Fetch data from the url
@@ -35,7 +35,7 @@ class DataIngestion:
             raise e
         
     
-        
+
     def extract_zip_file(self):
         """
         zip_file_path: str
@@ -46,4 +46,5 @@ class DataIngestion:
         os.makedirs(unzip_path, exist_ok=True)
         with zipfile.ZipFile(self.config.local_data_file, 'r') as zip_ref:
             zip_ref.extractall(unzip_path)
+
 

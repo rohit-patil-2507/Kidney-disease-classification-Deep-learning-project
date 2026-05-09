@@ -1,0 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kidney Disease Classifier</title>
+
+  <link rel="shortcut icon" href="data:image/png;base64,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" />
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    :root{
+      --bg1:#eef2ff;
+      --bg2:#e0f2fe;
+      --card:#ffffff;
+      --primary:#0b1b3a;
+      --primary2:#2563eb;
+      --accent:#22c55e;
+      --danger:#ef4444;
+      --border:#e6e8ef;
+      --shadow: 0 14px 40px rgba(16,24,40,.12);
+      --shadow2: 0 10px 24px rgba(37,99,235,.18);
+      --radius:18px;
+    }
+
+    *{box-sizing:border-box;}
+    body{
+      background: radial-gradient(1200px 600px at 20% -10%, var(--bg2), transparent 55%),
+                  radial-gradient(900px 500px at 95% 10%, #fce7f3, transparent 55%),
+                  linear-gradient(180deg, var(--bg1), #f8fafc);
+      min-height:100vh;
+    }
+
+    .app-wrap{max-width:1120px;margin:26px auto;padding:0 16px;}
+
+    .hero{
+      background: linear-gradient(135deg, rgba(37,99,235,.12), rgba(34,197,94,.08));
+      border:1px solid rgba(37,99,235,.18);
+      border-radius: var(--radius);
+      padding: 18px 18px;
+      box-shadow: 0 8px 26px rgba(37,99,235,.10);
+    }
+
+    .hero-title{color:var(--primary);font-weight:900;letter-spacing:.2px;}
+    .hero-sub{color:#5b6b86;font-weight:500;}
+
+    .status-pill{
+      display:inline-flex;align-items:center;gap:10px;
+      padding:10px 14px;border-radius:999px;
+      border:1px solid rgba(37,99,235,.18);
+      background: rgba(255,255,255,.75);
+      box-shadow: 0 6px 18px rgba(16,24,40,.06);
+    }
+
+    .dot{width:10px;height:10px;border-radius:50%;background:#9ca3af;}
+    .dot.ready{background: var(--accent); box-shadow: 0 0 0 6px rgba(34,197,94,.12);} 
+    .dot.notready{background: var(--danger); box-shadow: 0 0 0 6px rgba(239,68,68,.12);} 
+
+    .card-soft{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
+    }
+
+    .panel-head{
+      display:flex;align-items:center;justify-content:space-between;gap:12px;
+      padding:16px 16px 6px 16px;
+    }
+    .panel-title{
+      font-weight:800;color:var(--primary);
+      display:flex;align-items:center;gap:10px;
+    }
+    .panel-title i{color:var(--primary2)}
+
+    .muted{color:#64748b;}
+    .small-note{font-size:12px;color:#7b879f}
+
+    .dropzone{
+      border:2px dashed rgba(37,99,235,.35);
+      border-radius:16px;
+      padding:22px;
+      background:linear-gradient(180deg, rgba(37,99,235,.06), rgba(37,99,235,.02));
+      transition:.15s ease;
+      min-height:240px;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      gap:12px;
+      outline:none;
+    }
+    .dropzone.dragover{
+      border-color:rgba(37,99,235,.9);
+      background:linear-gradient(180deg, rgba(37,99,235,.12), rgba(37,99,235,.03));
+      transform: translateY(-1px);
+      box-shadow: var(--shadow2);
+    }
+
+    .preview{
+      width:260px;
+      height:260px;
+      border-radius:14px;
+      border:1px solid var(--border);
+      background:#f8fbff;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      overflow:hidden;
+      position:relative;
+    }
+    .preview img{width:100%;height:100%;object-fit:cover;display:none;}
+    .preview .placeholder{color:#7b879f;font-size:14px;text-align:center;padding:0 14px;}
+
+    .file-input{display:none;}
+
+    .btn-wide{min-width:190px;}
+
+    .btn-primaryx{
+      background: linear-gradient(135deg, var(--primary2), #4f46e5);
+      border:none;
+      box-shadow: 0 14px 40px rgba(37,99,235,.24);
+      color:#fff;
+      font-weight:700;
+    }
+
+    .btn-successx{
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      border:none;
+      box-shadow: 0 14px 40px rgba(34,197,94,.22);
+      color:#fff;
+      font-weight:800;
+    }
+
+    .result-area{
+      min-height: 260px;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      gap:14px;
+      padding: 16px;
+    }
+
+    .result-badge{
+      font-size:14px;
+      padding:10px 14px;
+      border-radius:999px;
+      font-weight:900;
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      border:1px solid rgba(17,24,39,.08);
+    }
+
+    .result-badge.tumor{background:#fff5f5;color:#b42318;border-color:rgba(220,53,69,.20);}
+    .result-badge.normal{background:#f0fff7;color:#047857;border-color:rgba(16,185,129,.20);}
+
+    .progress-bar-shell{
+      width: 100%; height: 10px; border-radius:999px;
+      background: #eef2ff; overflow:hidden; display:none;
+    }
+    .progress-bar-shell.show{display:block;}
+    .progress-bar{
+      height: 100%; width: 30%;
+      background: linear-gradient(90deg, rgba(37,99,235,.9), rgba(34,197,94,.9));
+      border-radius:999px;
+      animation: loadPulse 1.1s ease-in-out infinite;
+    }
+    @keyframes loadPulse{
+      0%{transform: translateX(-30%); width: 20%;}
+      50%{transform: translateX(20%); width: 60%;}
+      100%{transform: translateX(80%); width: 20%;}
+    }
+
+    #loadingOverlay{
+      position:fixed;
+      inset:0;
+      background: rgba(255,255,255,.72);
+      z-index:99999;
+      display:none;
+      align-items:center;
+      justify-content:center;
+      backdrop-filter: blur(6px);
+    }
+    .spinner{
+      width:64px;height:64px;
+      border-radius:50%;
+      border:8px solid #e5e7eb;
+      border-top-color: var(--primary2);
+      animation: spin 1.2s linear infinite;
+    }
+    @keyframes spin{to{transform:rotate(360deg)}}
+
+    .history-list{
+      padding-left:0; list-style:none; margin: 10px 0 0 0;
+      display:flex; flex-direction:column; gap:10px;
+    }
+    .history-item{
+      border:1px solid rgba(37,99,235,.15);
+      background: rgba(37,99,235,.05);
+      border-radius: 14px;
+      padding: 12px 12px;
+      display:flex; justify-content:space-between; align-items:center; gap:12px;
+    }
+    .history-item .left{display:flex;align-items:center;gap:10px;}
+    .history-item .tag{
+      font-weight:900; padding:6px 10px; border-radius:999px; font-size:12px;
+      border:1px solid rgba(17,24,39,.08);
+    }
+    .history-item .tag.tumor{background:#fff5f5;color:#b42318;border-color:rgba(220,53,69,.20);}
+    .history-item .tag.normal{background:#f0fff7;color:#047857;border-color:rgba(16,185,129,.20);}
+
+    .kbd{
+      font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      font-size: 12px;
+      border:1px solid rgba(17,24,39,.12);
+      background: rgba(255,255,255,.8);
+      padding: 2px 8px; border-radius: 10px;
+      color:#334155;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="loadingOverlay" aria-live="polite" aria-busy="true">
+    <div class="spinner"></div>
+  </div>
+
+  <div class="app-wrap">
+    <div class="hero mb-3 d-flex flex-wrap align-items-center justify-content-between">
+      <div class="mb-2 mb-sm-0">
+        <h1 class="hero-title mb-1">Kidney Disease Classifier</h1>
+        <div class="hero-sub">Upload an image, get an instant Tumor/Normal prediction, and track recent runs.</div>
+      </div>
+
+      <div class="status-pill" title="Backend status">
+        <span id="statusDot" class="dot"></span>
+        <div>
+          <div style="font-weight:900; color:var(--primary)" id="statusTitle">Checking model…</div>
+          <div class="small-note" id="statusSub">Calling <code>/status</code></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row no-gutters">
+      <div class="col-lg-6 pr-lg-3 mb-3 mb-lg-0">
+        <div class="card-soft h-100">
+          <div class="panel-head">
+            <div class="panel-title"><i class="fa-solid fa-cloud-arrow-up"></i> Input</div>
+            <div class="small-note">Tip: press <span class="kbd">P</span> to predict</div>
+          </div>
+
+          <div class="p-3 pt-0">
+            <div id="dropzone" class="dropzone" tabindex="0" aria-label="Upload dropzone">
+              <div class="preview" aria-label="Preview">
+                <img id="previewImg" alt="preview" />
+                <div class="placeholder" id="previewPlaceholder">No image selected<br><span class="muted">PNG/JPG recommended</span></div>
+              </div>
+
+              <input class="file-input" type="file" id="fileInput" accept="image/*" />
+
+              <div class="d-flex flex-column align-items-center gap-2">
+                <button id="browseBtn" class="btn btn-primaryx btn-wide">Choose image</button>
+                <div class="small-note text-center">Drag & drop here or browse.</div>
+              </div>
+
+              <div class="mt-2 muted" style="font-size:13px; text-align:center;">
+                Supported: JPG, PNG
+              </div>
+            </div>
+
+            <div class="d-flex justify-content-center mt-4 mb-2">
+              <button id="predictBtn" class="btn btn-successx btn-wide" disabled>
+                <i class="fa-solid fa-wand-magic-sparkles mr-2"></i>Predict
+              </button>
+            </div>
+
+            <div class="d-flex justify-content-center mb-2">
+              <div id="progressShell" class="progress-bar-shell" aria-hidden="true"><div class="progress-bar"></div></div>
+            </div>
+
+            <div id="clientError" class="text-center text-danger mt-3" style="display:none;"></div>
+
+            <div class="p-0 mt-3">
+              <div class="small-note">
+                Note: backend returns <code>{"prediction":"Tumor"}</code> (no probability values).
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-6 pl-lg-3">
+        <div class="card-soft h-100">
+          <div class="panel-head">
+            <div class="panel-title"><i class="fa-solid fa-chart-column"></i> Prediction</div>
+            <div class="small-note">Last 5 results</div>
+          </div>
+
+          <div class="result-area" style="padding-top:0;">
+            <div id="resultWrap">
+              <div class="muted" style="font-weight:600;">Upload an image to get a prediction.</div>
+            </div>
+
+            <div style="width:100%;">
+              <div class="muted small-note font-weight-bold mb-2">History</div>
+              <ul id="historyList" class="history-list"></ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script>
+    const dropzone = document.getElementById('dropzone');
+    const fileInput = document.getElementById('fileInput');
+    const browseBtn = document.getElementById('browseBtn');
+
+    const previewImg = document.getElementById('previewImg');
+    const previewPlaceholder = document.getElementById('previewPlaceholder');
+
+    const predictBtn = document.getElementById('predictBtn');
+    const clientError = document.getElementById('clientError');
+
+    const resultWrap = document.getElementById('resultWrap');
+    const loadingOverlay = document.getElementById('loadingOverlay');
+
+    const progressShell = document.getElementById('progressShell');
+
+    const historyList = document.getElementById('historyList');
+
+    const statusDot = document.getElementById('statusDot');
+    const statusTitle = document.getElementById('statusTitle');
+    const statusSub = document.getElementById('statusSub');
+
+    const MAX_HISTORY = 5;
+    let history = [];
+    let selectedFile = null;
+
+    function setClientError(msg){
+      clientError.style.display = 'block';
+      clientError.textContent = msg;
+    }
+    function clearClientError(){
+      clientError.style.display = 'none';
+      clientError.textContent = '';
+    }
+
+    function setLoading(isLoading){
+      loadingOverlay.style.display = isLoading ? 'flex' : 'none';
+      progressShell.classList.toggle('show', isLoading);
+    }
+
+    function formatTime(ts){
+      const d = new Date(ts);
+      return d.toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'});
+    }
+
+    function renderResult(prediction){
+      resultWrap.innerHTML = '';
+
+      const badgeClass = (prediction === 'Tumor') ? 'tumor' : 'normal';
+      const icon = (prediction === 'Tumor') ? '🩺' : '🧬';
+
+      const badge = document.createElement('div');
+      badge.className = `result-badge ${badgeClass}`;
+      badge.innerHTML = `
+        <span style="font-size:18px">${icon}</span>
+        <span style="font-size:16px">${prediction}</span>
+      `;
+
+      const sub = document.createElement('div');
+      sub.className = 'muted';
+      sub.style.fontWeight = '600';
+      sub.textContent = 'Inference complete.';
+
+      resultWrap.appendChild(badge);
+      resultWrap.appendChild(sub);
+    }
+
+    function resetResult(){
+      resultWrap.innerHTML = '<div class="muted" style="font-weight:600;">Upload an image to get a prediction.</div>';
+    }
+
+    function addHistory(prediction){
+      history.unshift({prediction, ts: Date.now()});
+      history = history.slice(0, MAX_HISTORY);
+
+      historyList.innerHTML = '';
+      for(const item of history){
+        const li = document.createElement('li');
+        li.className = 'history-item';
+
+        const left = document.createElement('div');
+        left.className = 'left';
+
+        const tag = document.createElement('div');
+        tag.className = `tag ${item.prediction === 'Tumor' ? 'tumor' : 'normal'}`;
+        tag.textContent = item.prediction;
+
+        const dot = document.createElement('div');
+        dot.style.width = '10px';
+        dot.style.height = '10px';
+        dot.style.borderRadius = '50%';
+        dot.style.background = item.prediction === 'Tumor' ? '#ef4444' : '#16a34a';
+        dot.style.boxShadow = item.prediction === 'Tumor' ? '0 0 0 6px rgba(239,68,68,.10)' : '0 0 0 6px rgba(22,163,74,.10)';
+
+        const meta = document.createElement('div');
+        meta.style.display = 'flex';
+        meta.style.flexDirection = 'column';
+        meta.style.lineHeight = '1.1';
+
+        const metaTop = document.createElement('div');
+        metaTop.style.fontWeight = '900';
+        metaTop.textContent = 'Prediction';
+
+        const metaBottom = document.createElement('div');
+        metaBottom.className = 'small-note';
+        metaBottom.textContent = formatTime(item.ts);
+
+        meta.appendChild(metaTop);
+        meta.appendChild(metaBottom);
+
+        left.appendChild(dot);
+        left.appendChild(meta);
+
+        li.appendChild(left);
+        li.appendChild(tag);
+
+        historyList.appendChild(li);
+      }
+    }
+
+    function fileToBase64NoPrefix(file){
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onerror = () => reject(new Error('Failed to read file'));
+        reader.onload = () => {
+          const dataUrl = reader.result;
+          const base64 = dataUrl.split(',')[1];
+          resolve(base64);
+        };
+        reader.readAsDataURL(file);
+      });
+    }
+
+    function handleFile(file){
+      clearClientError();
+      resetResult();
+      setLoading(false);
+      selectedFile = null;
+
+      if(!file || !file.type || !file.type.startsWith('image/')){
+        setClientError('Please upload a valid image file (JPG/PNG).');
+        predictBtn.disabled = true;
+        return;
+      }
+
+      selectedFile = file;
+
+      previewPlaceholder.style.display = 'none';
+      previewImg.style.display = 'block';
+      previewImg.src = URL.createObjectURL(file);
+
+      predictBtn.disabled = false;
+    }
+
+    browseBtn.addEventListener('click', () => fileInput.click());
+
+    fileInput.addEventListener('change', (e) => {
+      const file = e.target.files && e.target.files[0];
+      if(file) handleFile(file);
+      else{
+        predictBtn.disabled = true;
+        previewPlaceholder.style.display = 'block';
+        previewImg.style.display = 'none';
+        selectedFile = null;
+        resetResult();
+      }
+    });
+
+    ['dragenter','dragover'].forEach(evtName => {
+      dropzone.addEventListener(evtName, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        dropzone.classList.add('dragover');
+      });
+    });
+
+    ['dragleave','drop'].forEach(evtName => {
+      dropzone.addEventListener(evtName, (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        dropzone.classList.remove('dragover');
+      });
+    });
+
+    dropzone.addEventListener('drop', (e) => {
+      const dt = e.dataTransfer;
+      if(dt && dt.files && dt.files.length > 0){
+        const file = dt.files[0];
+        // Mirror into input for future reads
+        fileInput.files = dt.files;
+        handleFile(file);
+      }
+    });
+
+    async function predict(){
+      if(!selectedFile){
+        setClientError('Select an image first.');
+        return;
+      }
+
+      clearClientError();
+      predictBtn.disabled = true;
+      setLoading(true);
+
+      try{
+        const base64 = await fileToBase64NoPrefix(selectedFile);
+
+        const res = await fetch('/predict', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ image: base64 })
+        });
+
+        const data = await res.json();
+        if(!res.ok){
+          throw new Error(data && data.error ? data.error : 'Prediction failed');
+        }
+
+        const prediction = data.prediction;
+        renderResult(prediction);
+        addHistory(prediction);
+
+      }catch(err){
+        setClientError(err.message || 'Prediction failed');
+      }finally{
+        setLoading(false);
+        predictBtn.disabled = false;
+      }
+    }
+
+    predictBtn.addEventListener('click', predict);
+
+    // Keyboard: P to predict (when focused anywhere)
+    document.addEventListener('keydown', (e) => {
+      const key = (e.key || '').toLowerCase();
+      if(key === 'p' && !e.ctrlKey && !e.metaKey && !e.altKey){
+        // avoid triggering while typing in inputs
+        const tag = (document.activeElement && document.activeElement.tagName) ? document.activeElement.tagName.toLowerCase() : '';
+        if(tag === 'input' || tag === 'textarea' || tag === 'select') return;
+        if(!predictBtn.disabled) predict();
+      }
+    });
+
+    async function loadStatus(){
+      try{
+        const res = await fetch('/status', { method: 'GET' });
+        const data = await res.json();
+        const ready = data && data.model && data.model.ready;
+
+        statusSub.textContent = `Model ready: ${ready}`;
+
+        if(ready === 'True' || ready === true){
+          statusDot.classList.add('ready');
+          statusDot.classList.remove('notready');
+          statusTitle.textContent = 'Model is ready';
+        }else if(ready === 'unknown'){
+          statusTitle.textContent = 'Status unknown';
+          statusDot.classList.add('notready');
+        }else{
+          statusTitle.textContent = 'Model not found';
+          statusDot.classList.add('notready');
+        }
+      }catch{
+        statusTitle.textContent = 'Status unavailable';
+        statusSub.textContent = 'Backend unreachable';
+        statusDot.classList.add('notready');
+      }
+    }
+
+    loadStatus();
+  </script>
+</body>
+</html>
+

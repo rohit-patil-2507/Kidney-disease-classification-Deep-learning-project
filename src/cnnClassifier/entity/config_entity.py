@@ -33,6 +33,8 @@ class TrainingConfig:
     params_is_augmentation: bool
     params_image_size: list
     params_learning_rate: float
+    params_weights: str
+    params_classes: int
 
 
 @dataclass(frozen=True)
@@ -43,3 +45,4 @@ class EvaluationConfig:
     mlflow_uri: str
     params_image_size: list
     params_batch_size: int
+    params_learning_rate: float

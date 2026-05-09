@@ -5,7 +5,6 @@ import tensorflow as tf
 from pathlib import Path
 from cnnClassifier.entity.config_entity import PrepareBaseModelConfig
 
-
 class PrepareBaseModel:
     def __init__(self, config: PrepareBaseModelConfig):
         self.config = config
@@ -30,12 +29,17 @@ class PrepareBaseModel:
         elif (freeze_till is not None) and (freeze_till > 0):
             for layer in model.layers[:-freeze_till]:
                 model.trainable = False
+            for layer in model.layers[-freeze_till:]:
+                model.trainable = True
+            
 
-        flatten_in = tf.keras.layers.Flatten()(model.output)
+        x = tf.keras.layers.Flatten()(model.output)
+        x = tf.keras.layers.Dense(256,activation='relu')(x)
+        x = tf.keras.layers.Dropout(0.5)(x)
         prediction = tf.keras.layers.Dense(
-            units=classes,
-            activation="softmax"
-        )(flatten_in)
+        units=classes,
+        activation="softmax"
+         )(x)
 
         full_model = tf.keras.models.Model(
             inputs=model.input,
@@ -44,8 +48,8 @@ class PrepareBaseModel:
 
         full_model.compile(
             optimizer=tf.keras.optimizers.Adam(learning_rate=learning_rate),
-            loss=tf.keras.losses.SparseCategoricalCrossentropy(),
-            metrics=["accuracy", tf.keras.metrics.Precision(), tf.keras.metrics.Recall()]
+            loss=tf.keras.losses.CategoricalCrossentropy(),
+            metrics=["accuracy",tf.keras.metrics.Precision(), tf.keras.metrics.Recall()]
         )
 
         full_model.summary()
@@ -57,7 +61,7 @@ class PrepareBaseModel:
             model=self.model,
             classes=self.config.params_classes,
             freeze_all=True,
-            freeze_till=None,
+            freeze_till=4,
             learning_rate=self.config.params_learning_rate
         )
 

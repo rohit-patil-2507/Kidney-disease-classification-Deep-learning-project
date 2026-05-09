@@ -1,11 +1,15 @@
 import tensorflow as tf
 from pathlib import Path
+import os
 import mlflow
 import mlflow.keras
 from urllib.parse import urlparse
 from mlflow.tracking import MlflowClient
 from cnnClassifier.entity.config_entity import EvaluationConfig
 from cnnClassifier.utils.common import read_yaml, create_directories, save_json
+from cnnClassifier import logger
+
+
 
 
 class Evaluation:
@@ -55,13 +59,8 @@ class Evaluation:
 
     
     def log_into_mlflow(self):
-        import os
-        # Set authentication credentials for remote DagsHub MLflow server
-        os.environ['MLFLOW_TRACKING_USERNAME'] = 'rohit-patil-2507'
-        os.environ['MLFLOW_TRACKING_PASSWORD'] = 'eceeb5ddbc868faee671550f4c23909cdd1b7e29'
-        
-        # Use remote MLflow tracking server (DagsHub)
-        mlflow.set_tracking_uri("https://dagshub.com/rohit-patil-2507/Kidney-disease-classification-Deep-learning-project.mlflow")
+        tracking_uri = os.getenv("MLFLOW_TRACKING_URI", self.config.mlflow_uri)
+        mlflow.set_tracking_uri(tracking_uri)
 
         experiment_name = "Kidney-Disease-Classification"
         
@@ -84,13 +83,27 @@ class Evaluation:
             mlflow.log_metrics(
                 {"loss": self.score[0], "accuracy": self.score[1]}
             )
-            
-            # Register model only if using remote tracking server
-            if tracking_url_type_store != "file":
-                mlflow.keras.log_model(
-                    self.model, 
-                    "model", 
-                    registered_model_name="VGG16Model"
+
+            log_model = os.getenv(
+                "MLFLOW_LOG_MODEL",
+                "true" if tracking_url_type_store == "file" else "false"
+            ).lower()
+
+            if log_model in ("0", "false", "no"):
+                logger.info(
+                    "Skipping MLflow model artifact logging. Set MLFLOW_LOG_MODEL=true to upload/register the model."
                 )
-            else:
-                mlflow.keras.log_model(self.model, "model")
+                return
+
+            try:
+                # Register model only if using remote tracking server
+                if tracking_url_type_store != "file":
+                    mlflow.keras.log_model(
+                        self.model,
+                        "model",
+                        registered_model_name="VGG16Model"
+                    )
+                else:
+                    mlflow.keras.log_model(self.model, "model")
+            except Exception as e:
+                logger.warning(f"MLflow params and metrics were logged, but model artifact upload failed: {e}")
