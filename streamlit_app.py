@@ -1,8 +1,14 @@
+import os
+import sys
+
+# Add the project root and 'src' directory to sys.path to resolve ModuleNotFoundError
+sys.path.append(os.path.abspath(os.path.dirname(__file__)))
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "src")))
+
 import streamlit as st
 import numpy as np
 from PIL import Image
 from cnnClassifier.pipeline.prediction import PredictionPipeline
-import os
 import io
 import base64
 import pandas as pd
