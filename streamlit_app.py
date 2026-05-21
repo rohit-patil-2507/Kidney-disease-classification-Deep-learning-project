@@ -1259,7 +1259,6 @@ IMPORTANT: Always conclude your response with the exact following disclaimer:
             response = "I have provided the standard medical advisory above. Please configure your Groq API key securely in Streamlit Secrets to enable advanced interactive chat capabilities."
 
         st.session_state.chat_history.append({"role": "assistant", "content": response})
-        st.balloons()
 
     # --- Implement Chat History Export Functionality: Provide a UI and logic for users to clear or download their chat history ---
     if st.session_state.chat_history:
