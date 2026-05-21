@@ -1,7 +1,8 @@
-# Kidney-Disease-Classification-MLflow-DVC
+# Kidney-Disease-Classification-MLflow-DVC-streamlit.
 
 
 ## Workflows
+## End-to-End Project Workflow
 
 1. Update config.yaml
 2. Update secrets.yaml [Optional]
@@ -13,6 +14,41 @@
 8. Update the main.py
 9. Update the dvc.yaml
 10. app.py
+This project follows a structured, modular approach to machine learning pipeline development and deployment. Below is the detailed workflow we followed:
+
+### 1. Environment & Project Setup
+- **Template Initialization**: Created the initial directory structure automatically using a custom `template.py` script.
+- **Environment**: Set up a Conda virtual environment and installed all dependencies from `requirements.txt`.
+
+### 2. Configuration & Secrets Management
+- **Configuration (`config.yaml`)**: Centralized data, model, and tracking paths.
+- **Hyperparameters (`params.yaml`)**: Defined model parameters like epochs, batch size, and learning rate.
+- **Secrets (`secrets.toml`)**: Handled API keys securely (e.g., Groq API for the chatbot).
+
+### 3. Modular Pipeline Components (`src/cnnClassifier`)
+- **Entity Definition**: Created dataclasses (`entity`) to strongly type configuration returns.
+- **Configuration Manager**: Built a central manager (`src/config/configuration.py`) to read `config.yaml` and `params.yaml` and provide settings to each component.
+- **Stages Implementation**:
+  - **Stage 1: Data Ingestion** - Downloading and extracting the dataset.
+  - **Stage 2: Prepare Base Model** - Fetching VGG16, freezing base layers, and adding custom dense layers for binary classification (Normal vs. Tumor).
+  - **Stage 3: Model Training** - Compiling and training the model using `tf.keras`, utilizing callbacks.
+  - **Stage 4: Model Evaluation** - Calculating validation metrics and tracking the experiment via MLflow.
+
+### 4. Orchestration & Experiment Tracking
+- **DVC (Data Version Control)**: Tied all pipeline stages together via `dvc.yaml`. DVC orchestrates the execution (`dvc repro`) and skips stages that haven't changed.
+
+- **MLflow Integration**: Set up DagsHub as the remote tracking URI to log metrics, parameters, and models securely (with `mlflow_utils.py` handling the experiment lifecycle).
+
+### 5. Application Interfaces
+- **Flask API (`app.py`)**: Built a robust backend to handle prediction requests. Added data validation steps (checking image blurriness, valid grayscale scans, and verifying against a secondary CT verification model).
+
+- **Streamlit Explainability App (`streamlit.py`)**: Developed an advanced, medical-themed UI featuring:
+  - Single and Batch image prediction capabilities.
+  - **Explainable AI (XAI)**: Grad-CAM overlay heatmaps to visualize the model's focus.
+  - **Medical Advisory AI**: Integrated LLaMA-3 via Groq API to provide context-aware nephrology advice based on the model's prediction.
+
+
+
 
 # How to run?
 ### STEPS:
@@ -25,7 +61,8 @@ git clone https://github.com/rohit-patil-2507/Kidney-Disease-Classification-Deep
 ### STEP 01- Create a conda environment after opening the repository
 
 ```bash
-conda create -n cnncls python=3.8 -y
+conda create -n cnncls python=3.12 -y
+conda create -n <env>  python==3.10 -y #you can follow this command if you want to use native GPU of ur laptop
 ```
 
 ```bash
@@ -47,6 +84,47 @@ Now,
 ```bash
 open up you local host and port
 ```
+
+## Streamlit Explainability App
+
+The project also includes a Streamlit front-end for an evaluator-friendly demo.
+It supports:
+
+- image upload and sample-image testing
+- confidence scores for `Normal` and `Tumor`
+- uploaded image plus prediction side by side
+- Grad-CAM heatmaps for visual explainability
+- preprocessing visualization for resize and normalization
+- batch upload predictions
+- validation metrics dashboard with accuracy, precision, recall, F1-score, and a confusion matrix
+
+Run it locally:
+
+```bash
+pip install -r requirements.txt
+streamlit run app.py
+```
+
+For public deployment (Streamlit Community Cloud): keep a deployable model at:
+
+```bash
+model/model.h5
+```
+
+The app will also use `artifacts/training/model.h5` when it exists locally after training.
+
+### Streamlit Community Cloud deployment
+1. Ensure these files exist in your repo:
+   - `streamlit_app.py`
+   - `requirements-streamlit.txt`
+   - `model/model.h5`
+2. Push your repo to GitHub.
+3. Go to https://share.streamlit.io/ and create a new app.
+4. Select your GitHub repository and set:
+   - **Main file**: `streamlit_app.py`
+   - **Python requirements**: `requirements-streamlit.txt`
+5. Run/Save and copy the generated public URL.
+
 
 
 
@@ -111,80 +189,5 @@ DVC
  - Its very lite weight for POC only
  - lite weight expriements tracker
  - It can perform Orchestration (Creating Pipelines)
-
-
-
-# AWS-CICD-Deployment-with-Github-Actions
-
-## 1. Login to AWS console.
-
-## 2. Create IAM user for deployment
-
-	#with specific access
-
-	1. EC2 access : It is virtual machine
-
-	2. ECR: Elastic Container registry to save your docker image in aws
-
-
-	#Description: About the deployment
-
-	1. Build docker image of the source code
-
-	2. Push your docker image to ECR
-
-	3. Launch Your EC2 
-
-	4. Pull Your image from ECR in EC2
-
-	5. Lauch your docker image in EC2
-
-	#Policy:
-
-	1. AmazonEC2ContainerRegistryFullAccess
-
-	2. AmazonEC2FullAccess
-
-	
-## 3. Create ECR repo to store/save docker image
-    - Save the URI: 566373416292.dkr.ecr.us-east-1.amazonaws.com/chicken
-
-	
-## 4. Create EC2 machine (Ubuntu) 
-
-## 5. Open EC2 and Install docker in EC2 Machine:
-	
-	
-	#optinal
-
-	sudo apt-get update -y
-
-	sudo apt-get upgrade
-	
-	#required
-
-	curl -fsSL https://get.docker.com -o get-docker.sh
-
-	sudo sh get-docker.sh
-
-	sudo usermod -aG docker ubuntu
-
-	newgrp docker
-	
-# 6. Configure EC2 as self-hosted runner:
-    setting>actions>runner>new self hosted runner> choose os> then run command one by one
-
-
-# 7. Setup github secrets:
-
-    AWS_ACCESS_KEY_ID=
-
-    AWS_SECRET_ACCESS_KEY=
-
-    AWS_REGION = us-east-1
-
-    AWS_ECR_LOGIN_URI = demo>>  566373416292.dkr.ecr.ap-south-1.amazonaws.com
-
-    ECR_REPOSITORY_NAME = simple-app
 
 
