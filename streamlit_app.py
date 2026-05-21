@@ -5,6 +5,7 @@ import sys
 sys.path.append(os.path.abspath(os.path.dirname(__file__)))
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "src")))
 
+import time
 import streamlit as st
 import numpy as np
 from PIL import Image
@@ -126,13 +127,17 @@ if st.session_state.theme == 'dark':
     footer_text = "#000000"                 # Black Text for White Footer
     divider_color = "#FFFFFF"               # White Dividers for Dark Theme
     user_chat_bg = "rgba(56, 189, 248, 0.05)"
-    assistant_chat_bg = "rgba(80, 200, 120, 0.05)"
+    assistant_chat_bg = "rgba(16, 185, 129, 0.15)" # Vibrant Emerald Green for Assistant in Dark Theme
     header_line_color = "#FFFFFF"           # White line for Dark Theme
     header_shadow = "rgba(255, 255, 255, 0.15)" # Soft white glow for Dark Theme
     scrollbar_color = "rgba(255, 255, 255, 0.25)"
     scrollbar_hover = "rgba(255, 255, 255, 0.5)"
     sidebar_icon_color = "#FFFFFF"          # Pure white for high contrast
     sidebar_icon_bg = "rgba(56, 189, 248, 0.25)" # Bright cyan button background for visibility
+    chat_input_bg = "#1E293B"               # Deep Slate Blue for Chat Input
+    chat_input_text_color = "#F8FAFC"       # Crisp Off-White Text for Chat Input
+    chat_btn_hover_bg = "#007BFF"           # Medical Blue for Chat Send Button Hover
+    chat_btn_hover_color = "#FFFFFF"        # White Icon for Chat Send Button Hover
 else:
     bg_color = "#F4F6F8"           # Soft Clinical Slate Background
     grid_color = "rgba(0, 0, 0, 0.03)"       # Very faint black grid
@@ -155,13 +160,17 @@ else:
     footer_text = "#FFFFFF"                 # White Text for Black Footer
     divider_color = "#000000"               # Black Dividers for Light Theme
     user_chat_bg = "rgba(2, 132, 199, 0.05)"
-    assistant_chat_bg = "rgba(80, 200, 120, 0.05)"
+    assistant_chat_bg = "rgba(16, 185, 129, 0.15)" # Vibrant Emerald Green for Assistant in Light Theme
     header_line_color = "#000000"           # Black line for Light Theme
     header_shadow = "rgba(0, 0, 0, 0.25)"   # Soft dark shadow for Light Theme
     scrollbar_color = "rgba(0, 0, 0, 0.2)"
     scrollbar_hover = "rgba(0, 0, 0, 0.4)"
     sidebar_icon_color = "#1E282D"          # Dark slate
     sidebar_icon_bg = "rgba(0, 0, 0, 0.05)" # Soft grey background
+    chat_input_bg = "#000000"               # Black for Chat Input in Light Theme
+    chat_input_text_color = "#FFFFFF"       # White text for Chat Input in Light Theme
+    chat_btn_hover_bg = "#0056b3"           # Darker Blue for Chat Send Button Hover
+    chat_btn_hover_color = "#FFFFFF"        # White Icon for Chat Send Button Hover
 
 st.markdown(f"""
     <style>
@@ -170,6 +179,18 @@ st.markdown(f"""
     
     html, body {{
         font-family: 'Inter', 'Segoe UI', Roboto, sans-serif;
+    }}
+
+    /* Chat Input Submit Button Hover State */
+    [data-testid="stChatInput"] button:hover {{
+        background-color: {chat_btn_hover_bg} !important;
+        color: {chat_btn_hover_color} !important;
+        transform: scale(1.1) !important;
+        transition: all 0.2s ease-in-out !important;
+    }}
+    [data-testid="stChatInput"] button:hover svg {{
+        fill: {chat_btn_hover_color} !important;
+        color: {chat_btn_hover_color} !important;
     }}
 
     /* Safely apply modern font to typography without breaking Streamlit's native icon ligatures (like the green tick) */
@@ -471,6 +492,22 @@ st.markdown(f"""
     .bouncing-dots .dot2 {{ animation-delay: -0.16s; }}
     .bouncing-dots .dot3 {{ animation-delay: 0s; }}
 
+    /* Gemini-style Fading/Pulsing Cursor */
+    @keyframes geminiBlink {{
+        0%, 100% {{ opacity: 1; transform: scale(1); }}
+        50% {{ opacity: 0.5; transform: scale(0.8); }}
+    }}
+    .gemini-cursor {{
+        display: inline-block;
+        width: 12px;
+        height: 12px;
+        background: linear-gradient(135deg, #38BDF8, #50C878);
+        border-radius: 50%;
+        margin-left: 6px;
+        animation: geminiBlink 0.8s infinite alternate;
+        vertical-align: middle;
+    }}
+
     /* File Uploader Customization */
     [data-testid="stFileUploadDropzone"] {{
         border: 2px dashed #000000 !important;
@@ -588,37 +625,36 @@ st.markdown(f"""
         display: none !important;
     }}
 
-    /* Text Input Active/Focus State */
-    [data-testid="stTextInput"] div[data-baseweb="base-input"]:focus-within {{
-        border-color: #007BFF !important;
-        box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2) !important;
-        transform: translateY(-1px) !important;
-    }}
-
-    /* Custom Chat Input Styling */
-    [data-testid="stTextInput"] div[data-baseweb="base-input"] {{
+    /* Chat Input Active/Focus State */
+    [data-testid="stChatInput"] {{
         border-radius: 25px !important;
         background-color: {container_bg} !important;
+        background-color: {chat_input_bg} !important;
         border: 2px solid #007BFF !important;
         box-shadow: 0 4px 12px rgba(0, 123, 255, 0.15) !important;
         transition: all 0.2s ease-in-out !important;
     }}
-    [data-testid="stTextInput"] div[data-baseweb="input"] {{
+    [data-testid="stChatInput"]:focus-within {{
+        border-color: #007BFF !important;
+        box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.2) !important;
+        transform: translateY(-1px) !important;
+    }}
+    [data-testid="stChatInput"] > div {{
         background-color: transparent !important;
         border: none !important;
+    }}
+    [data-testid="stChatInput"] textarea {{
+        font-size: 1.05rem !important;
+        color: {chat_input_text_color} !important;
+        -webkit-text-fill-color: {chat_input_text_color} !important;
+        background-color: transparent !important;
         padding: 4px 16px !important;
     }}
-    [data-testid="stTextInput"] input {{
-        font-size: 1.05rem !important;
-        color: {text_color} !important;
-        -webkit-text-fill-color: {text_color} !important;
-        background-color: transparent !important;
-    }}
-    [data-testid="stTextInput"] input::placeholder {{
-        color: {text_color} !important;
-        -webkit-text-fill-color: {text_color} !important;
-        opacity: 0.5 !important;
-        font-weight: 500 !important;
+    [data-testid="stChatInput"] textarea::placeholder {{
+        color: {chat_input_text_color} !important;
+        -webkit-text-fill-color: {chat_input_text_color} !important;
+        opacity: 0.75 !important;
+        font-weight: 600 !important;
     }}
 
     /* Alter Progress Bar Color for Batch Processing */
@@ -1074,8 +1110,8 @@ try:
 except Exception:
     pass  # Silently handle the case where secrets.toml does not exist
 
-if "GROQ_API_KEY" not in os.environ:
-    os.environ["GROQ_API_KEY"] = "YOUR_API_KEY_HERE"
+if os.environ.get("GROQ_API_KEY", "") in ["", "YOUR_API_KEY_HERE"]:
+    os.environ["GROQ_API_KEY"] = "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"
 
 CHATBOT_API_KEY = os.environ["GROQ_API_KEY"]
 CHATBOT_MODEL_NAME = "llama-3.3-70b-versatile"
@@ -1131,13 +1167,7 @@ with tab3:
         </div>
         """, unsafe_allow_html=True)
 
-    def submit_chat():
-        if st.session_state.chat_input_box.strip():
-            st.session_state.user_query = st.session_state.chat_input_box
-            st.session_state.chat_input_box = ""
-
     st.markdown("<h5 style='color: #6C757D; margin-top: 15px;'>Feel free to ask your doubts to Renal Vision AI.</h5>", unsafe_allow_html=True)
-    st.text_input("Query", key="chat_input_box", placeholder="Type your message here and press Enter...", label_visibility="collapsed", on_change=submit_chat)
     st.markdown("<p style='text-align: center; color: #888888; font-size: 0.85rem; margin-top: 5px;'><em>Renal AI can make mistakes, please double-check it.</em></p>", unsafe_allow_html=True)
 
     chat_container = st.container()
@@ -1146,40 +1176,62 @@ with tab3:
         for message in st.session_state.chat_history:
             if message["role"] == "user":
                 st.markdown(f"""
-                <div class="chat-animate" style="padding: 15px; margin-bottom: 12px; border-left: 4px solid {title_color}; background-color: {user_chat_bg}; border-radius: 0 8px 8px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-                    <strong style="color: {title_color};">👤 You:</strong><br><span style="color: {text_color};">{message['content']}</span>
+                <div style="display: flex; justify-content: flex-end; margin-bottom: 12px;">
+                    <div class="chat-animate" style="max-width: 80%; padding: 15px; background-color: {user_chat_bg}; border-radius: 20px 20px 4px 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+                        <strong style="color: {title_color};">👤 You</strong><br><span style="color: {text_color};">{message['content']}</span>
+                    </div>
                 </div>
                 """, unsafe_allow_html=True)
             else:
                 st.markdown(f"""
-                <div class="chat-animate" style="padding: 15px; margin-bottom: 12px; border-left: 4px solid #50C878; background-color: {assistant_chat_bg}; border-radius: 0 8px 8px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-                        <strong style="color: #50C878;">🩺 Assistant:</strong><br><span style="color: {assistant_text};">{message['content']}</span>
+                <div style="display: flex; justify-content: flex-start; margin-bottom: 12px;">
+                    <div class="chat-animate" style="max-width: 80%; padding: 15px; background-color: {assistant_chat_bg}; border-radius: 20px 20px 20px 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+                        <strong style="color: #50C878;">🩺 Assistant</strong><br><span style="color: {assistant_text};">{message['content']}</span>
+                    </div>
+                </div>
                 """, unsafe_allow_html=True)
 
         active_chat_placeholder = st.container()
 
-    prompt = st.session_state.user_query
+    # Replace text_input with chat_input, which naturally docks to the bottom of the screen
+    prompt = st.chat_input("Type your message here and press Enter...")
 
     if prompt:
-        st.session_state.user_query = "" # Immediately clear the user query from the session state to prevent duplicate processing on subsequent interactions.
+        # Inject an observer to auto-scroll the main container smoothly as new tokens stream in
+        st.components.v1.html("""
+            <script>
+                const mainContainer = window.parent.document.querySelector('.main') || window.parent.document.documentElement;
+                if (mainContainer) {
+                    if (window.parent.chatObserver) window.parent.chatObserver.disconnect();
+                    window.parent.chatObserver = new MutationObserver(function() {
+                        mainContainer.scrollTo({top: mainContainer.scrollHeight, behavior: 'smooth'});
+                    });
+                    window.parent.chatObserver.observe(mainContainer, { childList: true, subtree: true, characterData: true });
+                    mainContainer.scrollTo({top: mainContainer.scrollHeight, behavior: 'smooth'});
+                }
+            </script>
+        """, height=0)
+
         st.session_state.chat_history.append({"role": "user", "content": prompt})
         
         # Inject CSS to create a shimmering loading animation inside the input box
         # and disable further input while the model generates the response.
-        st.markdown(f"""
+        css_placeholder = st.empty()
+        css_placeholder.markdown(f"""
         <style>
         @keyframes shimmerInput {{
             0% {{ background-position: -1000px 0; }}
             100% {{ background-position: 1000px 0; }}
         }}
-        [data-testid="stTextInput"] div[data-baseweb="base-input"] {{
+        [data-testid="stChatInput"] {{
             background: linear-gradient(90deg, {container_bg} 25%, rgba(0, 123, 255, 0.2) 50%, {container_bg} 75%) !important;
+            background: linear-gradient(90deg, {chat_input_bg} 25%, rgba(0, 123, 255, 0.2) 50%, {chat_input_bg} 75%) !important;
             background-size: 1000px 100% !important;
             animation: shimmerInput 2s infinite linear !important;
             border-color: #007BFF !important;
             pointer-events: none !important;
         }}
-        [data-testid="stTextInput"] input {{
+        [data-testid="stChatInput"] textarea {{
             opacity: 0.5 !important;
             pointer-events: none !important;
         }}
@@ -1188,8 +1240,10 @@ with tab3:
 
         with active_chat_placeholder:
             st.markdown(f"""
-            <div class="chat-animate" style="padding: 15px; margin-bottom: 12px; border-left: 4px solid {title_color}; background-color: {user_chat_bg}; border-radius: 0 8px 8px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-                <strong style="color: {title_color};">👤 You:</strong><br><span style="color: {text_color};">{prompt}</span>
+            <div style="display: flex; justify-content: flex-end; margin-bottom: 12px;">
+                <div class="chat-animate" style="max-width: 80%; padding: 15px; background-color: {user_chat_bg}; border-radius: 20px 20px 4px 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+                    <strong style="color: {title_color};">👤 You</strong><br><span style="color: {text_color};">{prompt}</span>
+                </div>
             </div>
             """, unsafe_allow_html=True)
             
@@ -1197,12 +1251,14 @@ with tab3:
             
             # Display a temporary 'thinking' animation to provide visual feedback to the user while waiting for the LLM API response.
             assistant_placeholder.markdown(f"""
-            <div class="chat-animate" style="padding: 15px; margin-bottom: 12px; border-left: 4px solid #50C878; background-color: {assistant_chat_bg}; border-radius: 0 8px 8px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-                <strong style="color: #50C878;">🩺 Assistant:</strong><br>
-                <div class="bouncing-dots" style="margin-top: 8px;">
-                    <div class="dot1"></div>
-                    <div class="dot2"></div>
-                    <div class="dot3"></div>
+            <div style="display: flex; justify-content: flex-start; margin-bottom: 12px;">
+                <div class="chat-animate" style="max-width: 80%; padding: 15px; background-color: {assistant_chat_bg}; border-radius: 20px 20px 20px 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+                    <strong style="color: #50C878;">🩺 Assistant</strong><br>
+                    <div class="bouncing-dots" style="margin-top: 8px;">
+                        <div class="dot1"></div>
+                        <div class="dot2"></div>
+                        <div class="dot3"></div>
+                    </div>
                 </div>
             </div>
             """, unsafe_allow_html=True)
@@ -1211,8 +1267,10 @@ with tab3:
         if not latest_label:
             response = "⚠️ Please Provide the Image first. The Medical Advisory Chatbot remains locked until a valid scan is analyzed."
             assistant_placeholder.markdown(f"""
-            <div style="padding: 15px; margin-bottom: 12px; border-left: 4px solid #D9534F; background-color: {warning_bg}; border-radius: 0 8px 8px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-                <strong style="color: #D9534F;">🔒 Assistant:</strong><br><span style="color: {text_color};">{response}</span>
+            <div style="display: flex; justify-content: flex-start; margin-bottom: 12px;">
+                <div style="max-width: 80%; padding: 15px; background-color: {warning_bg}; border-radius: 20px 20px 20px 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+                    <strong style="color: #D9534F;">🔒 Assistant</strong><br><span style="color: {text_color};">{response}</span>
+                </div>
             </div>
             """, unsafe_allow_html=True)
         elif CHATBOT_API_KEY != "YOUR_API_KEY_HERE":
@@ -1247,18 +1305,58 @@ IMPORTANT: Always conclude your response with the exact following disclaimer:
                 )
                 response = ""
                 for chunk in completion:
-                    response += chunk.choices[0].delta.content or ""
-                    assistant_placeholder.markdown(f"""
-                    <div style="padding: 15px; margin-bottom: 12px; border-left: 4px solid #50C878; background-color: {assistant_chat_bg}; border-radius: 0 8px 8px 0; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
-                        <strong style="color: #50C878;">🩺 Assistant:</strong><br><span style="color: {assistant_text};">{response}✚</span>
+                    chunk_text = chunk.choices[0].delta.content or ""
+                    if chunk_text:
+                        response += chunk_text
+                        assistant_placeholder.markdown(f"""
+                        <div style="display: flex; justify-content: flex-start; margin-bottom: 12px;">
+                            <div style="max-width: 80%; padding: 15px; background-color: {assistant_chat_bg}; border-radius: 20px 20px 20px 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+                                <strong style="color: #50C878;">🩺 Assistant</strong><br><span style="color: {assistant_text};">{response}<span class="gemini-cursor"></span></span>
+                            </div>
+                        </div>
+                        """, unsafe_allow_html=True)
+                        time.sleep(0.015) # Enforce a smooth 60fps-like stream by decoupling from fast batched updates
+                        
+                # Final render without the cursor to lock the completed message cleanly
+                assistant_placeholder.markdown(f"""
+                <div style="display: flex; justify-content: flex-start; margin-bottom: 12px;">
+                    <div style="max-width: 80%; padding: 15px; background-color: {assistant_chat_bg}; border-radius: 20px 20px 20px 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+                        <strong style="color: #50C878;">🩺 Assistant</strong><br><span style="color: {assistant_text};">{response}</span>
                     </div>
-                    """, unsafe_allow_html=True)
+                </div>
+                """, unsafe_allow_html=True)
             except Exception as e:
                 response = f"Error calling Groq API: {e}"
+                assistant_placeholder.markdown(f"""
+                <div style="display: flex; justify-content: flex-start; margin-bottom: 12px;">
+                    <div style="max-width: 80%; padding: 15px; background-color: {warning_bg}; border-radius: 20px 20px 20px 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+                        <strong style="color: #D9534F;">⚠️ Error</strong><br><span style="color: {text_color};">{response}</span>
+                    </div>
+                </div>
+                """, unsafe_allow_html=True)
         else:
             response = "I have provided the standard medical advisory above. Please configure your Groq API key securely in Streamlit Secrets to enable advanced interactive chat capabilities."
+            assistant_placeholder.markdown(f"""
+            <div style="display: flex; justify-content: flex-start; margin-bottom: 12px;">
+                <div style="max-width: 80%; padding: 15px; background-color: {warning_bg}; border-radius: 20px 20px 20px 4px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+                    <strong style="color: #D9534F;">🔒 Assistant</strong><br><span style="color: {text_color};">{response}</span>
+                </div>
+            </div>
+            """, unsafe_allow_html=True)
 
         st.session_state.chat_history.append({"role": "assistant", "content": response})
+
+        # Remove the shimmering CSS to re-enable the input box
+        css_placeholder.empty()
+
+        # Disconnect the observer after generation is complete to prevent unwanted scrolling on other UI events
+        st.components.v1.html("""
+            <script>
+                if (window.parent.chatObserver) {
+                    window.parent.chatObserver.disconnect();
+                }
+            </script>
+        """, height=0)
 
     # --- Implement Chat History Export Functionality: Provide a UI and logic for users to clear or download their chat history ---
     if st.session_state.chat_history:
