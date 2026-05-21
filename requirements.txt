@@ -1,69 +1,16 @@
-# --- Core Application Dependencies ---
-# These are the packages essential for your Streamlit app to run.
-pip
-tensorflow>=2.21.0
-numpy>=1.26.4,<2.1.0
-Pillow>=11.0.0 # Image processing, often used with opencv-python or for general image handling
+tensorflow==2.15.0
+numpy==1.26.4
+Pillow>=11.0.0
 pandas>=2.2.2
 matplotlib>=3.9.1
 pydicom>=2.4.4
 streamlit>=1.36.0
-scipy>=1.13.1
-opencv-python>=4.10.0.84
+scipy==1.13.1
+opencv-python==4.9.0.80
 PyYAML>=6.0.2
 python-box>=7.2.0
 joblib>=1.4.2
-reportlab>=4.2.2 # Pure Python PDF generation library
-scikit-learn>=1.5.1
-groq>=0.9.0 # Assuming this is for an AI API like Groq Cloud
-
-# --- Conditional / Optional Dependencies ---
-# Only uncomment and include these if your Streamlit application *strictly* needs them at runtime.
-
-# Flask-related dependencies: Only if your project also includes a Flask API component.
-# Flask>=3.0.3
-# Flask-Cors>=4.0.1
-
-# pdfkit: This Python package requires 'wkhtmltopdf', a system executable.
-# 'wkhtmltopdf' cannot be installed via pip on Streamlit Cloud.
-# If PDF generation is critical, use 'reportlab' (already included) or another pure Python
-# alternative that does not rely on external system binaries.
-# pdfkit>=1.0.0
-
-# DVC (Data Version Control) and MLflow (MLOps):
-# Include these ONLY if your Streamlit app directly interacts with DVC/MLflow APIs at runtime
-# (e.g., fetching models or data from a DVC remote or MLflow tracking server *during app execution*).
-# If they are primarily for your training/experimentation pipeline and the app just consumes
-# their output (e.g., a saved model file), then they are not needed for deployment.
-# dvc>=3.51.2
-# mlflow>=2.14.3
-
-# gdown: For downloading files from Google Drive.
-# Include ONLY if your Streamlit app needs to download files from Google Drive at runtime.
-# gdown
-
-# --- Development / Non-Deployable Dependencies ---
-# These are typically for local development or cannot be installed via pip in a cloud environment.
-
-# '-e .': For editable installs during local development. Not needed for deployment as your
-# application code is already available in the deployment environment.
-# -e .
-
-# wkhtmltopdf: This is a system executable, not a Python package. pip cannot install it.
-# Its presence in requirements.txt will guarantee an installation failure.
-# wkhtmltopdf==0.2
-
-# wkhtmltopdf is a system executable, not a Python package. pip cannot install it.
-# wkhtmltopdf==0.2
-
-# The following are often development dependencies or tools that might not be needed
-# for the deployed Streamlit app's runtime. Review and uncomment only if essential.
-# Remove '-e .' as it's for editable installs, not typically for deployment.
-# Remove 'wkhtmltopdf' as it's a system executable, not a Python package.
-# Remove 'gdown' if files are pre-downloaded or served differently.
-# Remove 'dvc' and 'mlflow' if they are not used at runtime by the Streamlit app.
-#-e .
-#gdown
-#wkhtmltopdf==0.2
-#dvc>=3.51.2
-#mlflow>=2.14.3
+reportlab>=4.2.2
+scikit-learn==1.5.1
+groq>=0.9.0
+gdown
